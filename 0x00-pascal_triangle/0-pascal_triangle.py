@@ -1,25 +1,37 @@
 #!/usr/bin/python3
+"""
+Defines function returns a list of lists of integers
+representing the Pascal's triangle of n
+"""
 def pascal_triangle(n):
     """
-    This function takes an integer n as input and returns the
-    first n lines of Pascal's triangle as a list of lists.
+    Returns a list of lists of integers representing Pascal's triangle of n
+    :param n: the number of rows of Pascal's triangle
+    :type n: int
+    :return: a list of lists of integers representing Pascal's triangle of n
+    :rtype: list
     """
-#!/usr/bin/python3
-def pascal_triangle(n):
-    """
-    This function takes an integer n as input and returns the
-    first n lines of Pascal's triangle as a list of lists.
-    """
-
-    triangle_pascal = []
-    if type(n) is not int or n <= 0:
-        return triangle_pascal
-    for i in range(n):
-        line = []
-        for j in range(i + 1):
-            if j == 0 or j == i:
-                line.append(1)
-            elif i > 0 and j > 0:
-                line.append(triangle_pascal[i - 1][j - 1] + triangle_pascal[i - 1][j])
-        triangle_pascal.append(line)
-    return triangle_pascal
+    if type(n) is not int:
+        raise TypeError("the number of rows must be an integer")
+    triangle = []
+    if n <= 0:
+        return triangle
+    previous = [1]
+    # iterate over the rows of the triangle
+    for row_index in range(n):
+        rlist = []
+        if row_index == 0:
+            rlist = [1]
+        else:
+            for i in range(row_index + 1):
+                # iterate over the elements of the current row
+                # and calculate the element based on the previous row
+                if i == 0:
+                    rlist.append(0 + previous[i])
+                elif i == (row_index):
+                    rlist.append(previous[i - 1] + 0)
+                else:
+                    rlist.append(previous[i - 1] + previous[i])
+        previous = rlist
+        triangle.append(rlist)
+    return triangle
