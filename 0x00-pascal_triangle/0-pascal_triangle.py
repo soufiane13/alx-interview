@@ -1,33 +1,42 @@
 #!/usr/bin/python3
+
 def pascal_triangle(n):
     """
-    This function returns a Pascal's triangle of n size.
+    This function will generate a Pascal Triangle up to the given number of
+    rows. The output will be a list of lists.
 
-    Args:
-        n (int): The size of the triangle.
-
-    Returns:
-        list: A Pascal's triangle of n size.
+    :param n: The number of rows to generate
+    :type n: int
+    :return: A list of lists representing the Pascal Triangle
+    :rtype: list
     """
-    # Initialize an empty list
-    l = []
+    k = list()
+
     if n <= 0:
-        # Return an empty list for n <= 0
-        return l
-    # Initialize the first row of the triangle
-    l = [[1]]
-    # Iterate over the rows of the triangle
-    for i in range(1, n):
-        # Initialize the current row
-        temp = [1]
-        # Iterate over the elements of the current row
-        for j in range(len(l[i - 1]) - 1):
-            # Calculate the value of the current element
-            curr = l[i - 1]
-            temp.append(l[i - 1][j] + l[i - 1][j + 1])
-        # Add the last element of the row
-        temp.append(1)
-        # Add the current row to the triangle
-        l.append(temp)
-    # Return the triangle
+        return k
+
+    if n > 0:
+        # The first row is always [1]
+        k.append([1])
+
+    if n > 1:
+        # The second row is always [1, 1]
+        k.append([1, 1])
+
+    for x in range(3, n+1):
+        # For each row, we need to create a list of the correct size
+        k.append([0] * x)
+
+        # The first and last elements of each row are always 1
+        k[x-1][0] = 1
+        k[x-1][x-1] = 1
+
+        # For each element in the row (except the first and last)
+        for y in range(1, x-1):
+            # The value is the sum of the two elements directly above it
+            k[x-1][y] = k[x-2][y-1] + k[x-2][y]
+            k[x-1][y] = \
+                k[x-2][y-1] + k[x-2][y]
+
     return k
+
