@@ -26,29 +26,23 @@ count = 0
 status_possible = {200: 0, 301: 0, 400: 0, 401: 0,
                    403: 0, 404: 0, 405: 0, 500: 0}
 try:
-    # Iterate over each line in the log file
     for line in sys.stdin:
         args = line.split()
 
-        # Get the status code and file size from the line
         status_code = int(args[-2])
         file_size = int(args[-1])
 
-        # Increment the count for the status code and add the file size to the total
         if status_code in status_possible:
             status_possible[status_code] += 1
 
         total_f_size += file_size
         count += 1
 
-        # Print the statistics every 10 lines
         if count == 10:
             printStats(total_f_size, status_possible)
             count = 0
-    # Print the final statistics
     printStats(total_f_size, status_possible)
 except KeyboardInterrupt:
     raise
 finally:
-    # Print the final statistics if the program is interrupted
     printStats(total_f_size, status_possible)
