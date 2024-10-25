@@ -1,48 +1,54 @@
 #!/usr/bin/python3
 """
-Task 0. Log parsing
+Log parsing script that reads log data from standard input and outputs file size and frequency of status codes.
 """
 
 import sys
+import re
 
-
-def printStats(file_size, status):
+def output(log: dict) -> None:
     """
-    Print statistics about the log.
-
-    Args:
-        file_size (int): The total size of all files.
-        status (dict): A dictionary with the status codes as keys and the number
-            of times they appear as values.
+    Prints the current file size and frequency of HTTP status codes.
     """
-    print("File size: {}".format(file_size))
-    for key, value in sorted(status.items()):
-        if value != 0:
-            print("{}: {}".format(key, value))
+    print("File size: {}".format(log["file_size"]))
+    for code in sorted(log["code-frequency"]):
+        if log["code-frequency"][code]:
+            print("{}: {}".format(code, log["code-frequency"][code]))
 
+if __name__ == "__main__":
+    regex = re.compile(
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3} - \[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d+\] "GET /projects/260 HTTP/1.1" (.{3}) (\d+)'
+    )
 
-total_f_size = 0
-count = 0
-status_possible = {200: 0, 301: 0, 400: 0, 401: 0,
-                   403: 0, 404: 0, 405: 0, 500: 0}
-try:
-    for line in sys.stdin:
-        args = line.split()
+    line_count = 0
+    log = {}
+    log["file_size"] = 0
+    log["code-frequency"] = {
+        str(code): 0 for code in [
+            200, 301, 400, 401, 403, 404, 405, 500
+        ]
+    }
 
-        status_code = int(args[-2])
-        file_size = int(args[-1])
+    try:
+        for line in sys.stdin:
+            line = line.strip()
+            match = regex.fullmatch(line)
+            if match:
+                line_count += 1
+                code = match.group(1)
+                file_size = int(match.group(2))
 
-        if status_code in status_possible:
-            status_possible[status_code] += 1
+                # Update total file size
+                log["file_size"] += file_size
 
-        total_f_size += file_size
-        count += 1
+                # Increment frequency of status code if it's numeric
+                if code.isdecimal():
+                    log["code-frequency"][code] += 1
 
-        if count == 10:
-            printStats(total_f_size, status_possible)
-            count = 0
-    printStats(total_f_size, status_possible)
-except KeyboardInterrupt:
-    raise
-finally:
-    printStats(total_f_size, status_possible)
+                # Output log information every 10 lines
+                if line_count % 10 == 0:
+                    output(log)
+    finally:
+        # Output log information at the end of input
+        output(log)
+
