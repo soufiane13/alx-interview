@@ -98,5 +98,5 @@ def n_queens():
         print(clean)
 
 
-if __name__ = '__main__':
+if __name__ == '__main__':
     n_queens()
