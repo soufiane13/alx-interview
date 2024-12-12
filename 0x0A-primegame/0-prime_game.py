@@ -1,34 +1,69 @@
 #!/usr/bin/python3
 
+"""
+This module contains code for solving the "Who is the winner?" problem from
+CodeWars. The problem is to write a function that takes two arguments: a number
+x and a list of numbers. The function is to determine who wins in a game
+between Ben and Maria. Ben wins if the sum of the first x numbers is even.
+Maria wins if the sum is odd. The function returns a string indicating who
+wins.
+
+The function isWinner is the main function of the module. It takes two
+arguments, x and nums, and returns a string indicating who wins. The
+function rm_multiples is a helper function that is used by isWinner to
+remove all multiples of a given number from a list.
+"""
 
 def isWinner(x, nums):
     """
-    This function takes the number of rounds and a list of numbers as parameters and returns the winner of the game.
-    The game is played such that the players take turns to remove numbers from the list if they are prime numbers.
-    The player with the most number of primes in the end wins.
-    If there is a tie, the function returns None.
+    This function takes two arguments, x and nums, and returns a string
+    indicating who wins the game between Ben and Maria.
+
+    Parameters:
+    x (int): The number of numbers to take from the list.
+    nums (list): The list of numbers to take the numbers from.
+
+    Returns:
+    str: A string indicating who wins. The string is either "Ben" or "Maria".
     """
-    Ben = 0
-    Maria = 0
-
-    for round in range(x):
-        playing_numbers = [num for num in range(2, nums[round] + 1)]
-        # Use the Sieve of Eratosthenes to find the prime numbers
-        index = 0
-        while (index < len(playing_numbers)):
-            current_prime = playing_numbers[index]
-            sieve_index = index + current_prime
-            while(sieve_index < len(playing_numbers)):
-                playing_numbers.pop(sieve_index)
-                sieve_index += current_prime - 1
-            index += 1
-
-        prime_count = (len(playing_numbers))
-        if prime_count and prime_count % 2:
-            Maria += 1
-        else:
-            Ben += 1
-
-    if Ben == Maria:
+    if x <= 0 or nums is None:
         return None
-    return 'Ben' if Ben > Maria else 'Maria'
+    if x != len(nums):
+        return None
+    ben = 0
+    maria = 0
+
+    a = [1 for x in range(sorted(nums)[-1] + 1)]
+
+    a[0], a[1] = 0, 0
+    for i in range(2, len(a)):
+        rm_multiples(a, i)
+    for i in nums:
+        if sum(a[0:i + 1]) % 2 == 0:
+            ben += 1
+        else:
+            maria += 1
+    if ben > maria:
+        return "Ben"
+    if maria > ben:
+        return "Maria"
+    return None
+
+
+def rm_multiples(ls, x):
+    """
+    This function takes two arguments, ls and x, and removes all multiples of
+    x from the list ls.
+
+    Parameters:
+    ls (list): The list to remove the numbers from.
+    x (int): The number to remove the multiples of.
+
+    Returns:
+    None
+    """
+    for i in range(2, len(ls)):
+        try:
+            ls[i * x] = 0
+        except (ValueError, IndexError):
+            break
