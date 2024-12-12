@@ -7,11 +7,6 @@ x and a list of numbers. The function is to determine who wins in a game
 between Ben and Maria. Ben wins if the sum of the first x numbers is even.
 Maria wins if the sum is odd. The function returns a string indicating who
 wins.
-
-The function isWinner is the main function of the module. It takes two
-arguments, x and nums, and returns a string indicating who wins. The
-function rm_multiples is a helper function that is used by isWinner to
-remove all multiples of a given number from a list.
 """
 
 def isWinner(x, nums):
