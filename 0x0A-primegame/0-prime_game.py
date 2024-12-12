@@ -1,39 +1,34 @@
 #!/usr/bin/python3
 
+
 def isWinner(x, nums):
     """
-    Decide who wins the Prime Game.
-
-    The Prime Game is played by two players, Maria and Ben, who take turns
-    choosing a number from a list of numbers. The game ends when all numbers
-    have been chosen. The player who chose more prime numbers in their list
-    wins the game.
-
-    :param x: The number of rounds to play.
-    :type x: int
-    :param nums: A list of numbers to choose from.
-    :type nums: list
-    :return: The winner of the game, or None if the game is a draw.
-    :rtype: str or None
+    This function takes the number of rounds and a list of numbers as parameters and returns the winner of the game.
+    The game is played such that the players take turns to remove numbers from the list if they are prime numbers.
+    The player with the most number of primes in the end wins.
+    If there is a tie, the function returns None.
     """
-    if x < 1 or not nums:
+    Ben = 0
+    Maria = 0
+
+    for round in range(x):
+        playing_numbers = [num for num in range(2, nums[round] + 1)]
+        # Use the Sieve of Eratosthenes to find the prime numbers
+        index = 0
+        while (index < len(playing_numbers)):
+            current_prime = playing_numbers[index]
+            sieve_index = index + current_prime
+            while(sieve_index < len(playing_numbers)):
+                playing_numbers.pop(sieve_index)
+                sieve_index += current_prime - 1
+            index += 1
+
+        prime_count = (len(playing_numbers))
+        if prime_count and prime_count % 2:
+            Maria += 1
+        else:
+            Ben += 1
+
+    if Ben == Maria:
         return None
-    marias_wins, bens_wins = 0, 0
-    n = max(nums)
-    primes = [True for _ in range(1, n + 1, 1)]
-    primes[0] = False
-    # Find prime numbers up to n using the Sieve of Eratosthenes.
-    for i, is_prime in enumerate(primes, 1):
-        if i == 1 or not is_prime:
-            continue
-        for j in range(i + i, n + 1, i):
-            primes[j - 1] = False
-    # Count the number of prime numbers in each list.
-    for _, n in zip(range(x), nums):
-        primes_count = len(list(filter(lambda x: x, primes[0: n])))
-        bens_wins += primes_count % 2 == 0
-        marias_wins += primes_count % 2 == 1
-    # Decide the winner.
-    if marias_wins == bens_wins:
-        return None
-    return 'Maria' if marias_wins > bens_wins else 'Ben'
+    return 'Ben' if Ben > Maria else 'Maria'
