@@ -1,110 +1,39 @@
 #!/usr/bin/python3
 
-"""
-This program determines who wins a game between two players
-when the game is played with different numbers of rounds.
-
-The game is played in rounds. In each round, the current player
-is given a set of numbers from 1 to the number of rounds.
-The player must then cross out the smallest prime number in the set.
-The other numbers in the set are then updated to not be divisible
-by the smallest prime number.
-
-The player who wins the most rounds is declared the winner of the game.
-If both players win the same number of rounds, the game is a draw.
-"""
-
-
 def isWinner(x, nums):
     """
-    Determines who wins the game with the given numbers of rounds.
+    Decide who wins the Prime Game.
 
-    Parameters
-    ----------
-    x : int
-        The number of rounds in the game.
-    nums : list
-        A list of integers representing the number of rounds to play.
+    The Prime Game is played by two players, Maria and Ben, who take turns
+    choosing a number from a list of numbers. The game ends when all numbers
+    have been chosen. The player who chose more prime numbers in their list
+    wins the game.
 
-    Returns
-    -------
-    str
-        The winner of the game as a string.
+    :param x: The number of rounds to play.
+    :type x: int
+    :param nums: A list of numbers to choose from.
+    :type nums: list
+    :return: The winner of the game, or None if the game is a draw.
+    :rtype: str or None
     """
-    mariaWinsCount = 0
-    benWinsCount = 0
-
-    for num in nums:
-        roundsSet = list(range(1, num + 1))
-        primesSet = primes_in_range(1, num)
-
-        if not primesSet:
-            benWinsCount += 1
+    if x < 1 or not nums:
+        return None
+    marias_wins, bens_wins = 0, 0
+    n = max(nums)
+    primes = [True for _ in range(1, n + 1, 1)]
+    primes[0] = False
+    # Find prime numbers up to n using the Sieve of Eratosthenes.
+    for i, is_prime in enumerate(primes, 1):
+        if i == 1 or not is_prime:
             continue
-
-        isMariaTurns = True
-
-        while(True):
-            if not primesSet:
-                if isMariaTurns:
-                    benWinsCount += 1
-                else:
-                    mariaWinsCount += 1
-                break
-
-            smallestPrime = primesSet.pop(0)
-            roundsSet.remove(smallestPrime)
-
-            roundsSet = [x for x in roundsSet if x % smallestPrime != 0]
-
-            isMariaTurns = not isMariaTurns
-
-    if mariaWinsCount > benWinsCount:
-        return "Winner: Maria"
-
-    if mariaWinsCount < benWinsCount:
-        return "Winner: Ben"
-
-    return None
-
-
-def is_prime(n):
-    """
-    Checks if a number is prime.
-
-    Parameters
-    ----------
-    n : int
-        The number to check.
-
-    Returns
-    -------
-    bool
-        True if the number is prime, False otherwise.
-    """
-    if n < 2:
-        return False
-    for i in range(2, int(n ** 0.5) + 1):
-        if n % i == 0:
-            return False
-    return True
-
-
-def primes_in_range(start, end):
-    """
-    Returns a list of prime numbers in the given range.
-
-    Parameters
-    ----------
-    start : int
-        The start of the range.
-    end : int
-        The end of the range.
-
-    Returns
-    -------
-    list
-        A list of prime numbers in the given range.
-    """
-    primes = [n for n in range(start, end+1) if is_prime(n)]
-    return primes
+        for j in range(i + i, n + 1, i):
+            primes[j - 1] = False
+    # Count the number of prime numbers in each list.
+    for _, n in zip(range(x), nums):
+        primes_count = len(list(filter(lambda x: x, primes[0: n])))
+        bens_wins += primes_count % 2 == 0
+        marias_wins += primes_count % 2 == 1
+    # Decide the winner.
+    if marias_wins == bens_wins:
+        return None
+    return 'Maria' if marias_wins > bens_wins else 'Ben'
